@@ -1,0 +1,136 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Port Terminal Manager</title>
+
+    <link rel="stylesheet" href="./styles/main.css">
+</head>
+<body>
+    <div class="app-shell">
+
+        <!-- Top header and simulation controls -->
+        <header class="topbar">
+            <div class="brand">
+                <h1>Port Terminal</h1>
+                <p>Port Management Simulation</p>
+            </div>
+
+            <div class="search-area">
+                <label for="search-input">Search ships or containers</label>
+                <input
+                    id="search-input"
+                    type="search"
+                    placeholder="Enter an ID..."
+                    autocomplete="off"
+                >
+                <div id="search-results" class="search-results"></div>
+            </div>
+
+            <div class="simulation-controls">
+                <label for="speed-select">Speed</label>
+                <select id="speed-select">
+                    <option value="0.5">0.5×</option>
+                    <option value="1" selected>1×</option>
+                    <option value="2">2×</option>
+                    <option value="4">4×</option>
+                </select>
+
+                <button id="start-button" type="button">Start</button>
+                <button id="stop-button" type="button" disabled>
+                    Stop
+                </button>
+
+                <span id="simulation-status">Stopped</span>
+            </div>
+        </header>
+
+        <main>
+            <!-- Four docking lines -->
+            <section class="section" aria-labelledby="lines-heading">
+                <div class="section-heading">
+                    <h2 id="lines-heading">Docking Lines</h2>
+                    <p>4 lines · 8 ship places per line</p>
+                </div>
+
+                <div id="lines-grid" class="lines-grid">
+
+                    <section class="line-column" data-line-id="1">
+                        <h3>Line 1</h3>
+                        <div id="line-1-ships" class="ship-list"></div>
+                    </section>
+
+                    <section class="line-column" data-line-id="2">
+                        <h3>Line 2</h3>
+                        <div id="line-2-ships" class="ship-list"></div>
+                    </section>
+
+                    <section class="line-column" data-line-id="3">
+                        <h3>Line 3</h3>
+                        <div id="line-3-ships" class="ship-list"></div>
+                    </section>
+
+                    <section class="line-column" data-line-id="4">
+                        <h3>Line 4</h3>
+                        <div id="line-4-ships" class="ship-list"></div>
+                    </section>
+
+                </div>
+            </section>
+
+            <!-- Ships waiting outside the full port -->
+            <section class="section panel" aria-labelledby="sea-heading">
+                <h2 id="sea-heading">At Sea — Overflow</h2>
+                <div id="at-sea-list" class="chip-list">
+                    <p class="empty-message">No ships waiting at sea.</p>
+                </div>
+            </section>
+
+            <!-- Routes and yard information -->
+            <div class="lower-panels">
+
+                <section class="section panel" aria-labelledby="routes-heading">
+                    <h2 id="routes-heading">Destination Routes</h2>
+
+                    <div id="routes-list" class="routes-list">
+                        <p class="empty-message">No routes added yet.</p>
+                    </div>
+
+                    <label for="route-start">Explore destinations from:</label>
+                    <select id="route-start">
+                        <option value="">Select a destination</option>
+                    </select>
+
+                    <p id="reachable-destinations">
+                        Select a destination to see reachable locations.
+                    </p>
+
+                    <div id="unique-destinations">
+                        <strong>Unique destinations:</strong> None
+                    </div>
+                </section>
+
+                <section class="section panel" aria-labelledby="yard-heading">
+                    <h2 id="yard-heading">Container Yard</h2>
+                    <p>Containers waiting to be loaded</p>
+
+                    <div id="yard-list" class="chip-list">
+                        <p class="empty-message">The yard is empty.</p>
+                    </div>
+                </section>
+
+            </div>
+        </main>
+
+        <footer>
+            <p>Port Terminal Manager · Live Simulation</p>
+        </footer>
+
+    </div>
+
+    <script type="module" src="./main.js"></script>
+</body>
+</html>

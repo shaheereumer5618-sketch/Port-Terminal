@@ -1,0 +1,445 @@
+
+/* 1. Global styles */
+* {
+    box-sizing: border-box;
+}
+
+:root {
+    --background: #0b1220;
+    --panel: #141f30;
+    --panel-light: #1c2a3d;
+    --border: #2b3a4f;
+    --text: #edf4fc;
+    --muted: #9aacc2;
+    --accent: #38d6c0;
+    --accent-dark: #143f42;
+    --danger: #ff7272;
+    --warning: #ffc66d;
+}
+
+body {
+    margin: 0;
+    min-width: 320px;
+    background: var(--background);
+    color: var(--text);
+    font-family: Arial, Helvetica, sans-serif;
+    line-height: 1.5;
+}
+
+button,
+input,
+select {
+    font: inherit;
+}
+
+button,
+input,
+select {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 12px;
+}
+
+input,
+select {
+    background: var(--background);
+    color: var(--text);
+    min-width: 0;
+}
+
+button {
+    background: var(--accent);
+    color: #092020;
+    cursor: pointer;
+    font-weight: 700;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+button:hover:not(:disabled) {
+    transform: translateY(-1px);
+}
+
+button:disabled {
+    cursor: not-allowed;
+    opacity: 0.45;
+}
+
+button:focus-visible,
+input:focus-visible,
+select:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}
+
+label {
+    color: var(--muted);
+    font-size: 0.85rem;
+}
+
+/* 2. Overall page layout */
+.app-shell {
+    width: min(1600px, 100%);
+    margin: 0 auto;
+    padding: 24px;
+}
+
+.topbar {
+    display: grid;
+    grid-template-columns: auto minmax(200px, 1fr) auto;
+    gap: 24px;
+    align-items: center;
+    padding: 20px;
+    margin-bottom: 28px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+}
+
+.brand h1 {
+    margin: 0;
+    font-size: 1.6rem;
+    letter-spacing: -0.5px;
+}
+
+.brand p {
+    margin: 4px 0 0;
+    color: var(--muted);
+    font-size: 0.85rem;
+}
+
+.search-area,
+.simulation-controls {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.search-area {
+    position: relative;
+}
+
+.search-area input {
+    flex: 1;
+    width: 100%;
+}
+
+.simulation-controls {
+    justify-content: flex-end;
+}
+
+#simulation-status {
+    color: var(--muted);
+    font-size: 0.85rem;
+}
+
+/* 3. Section headings and panels */
+.section {
+    margin-bottom: 28px;
+}
+
+.section-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.section-heading h2,
+.panel h2 {
+    margin: 0;
+    font-size: 1.15rem;
+}
+
+.section-heading p,
+.panel > p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 0.88rem;
+}
+
+.panel {
+    min-width: 0;
+    padding: 20px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+}
+
+.panel h2 {
+    margin-bottom: 14px;
+}
+
+/* 4. Four docking lines */
+.lines-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 14px;
+}
+
+.line-column {
+    min-width: 0;
+    min-height: 250px;
+    padding: 14px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+}
+
+.line-column h3 {
+    margin: 0 0 14px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+    font-size: 1rem;
+}
+
+.ship-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* 5. Ship cards — used by the UI renderer */
+.ship-card {
+    min-width: 0;
+    padding: 12px;
+    background: var(--panel-light);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow-wrap: anywhere;
+}
+
+.ship-card.active {
+    border-color: var(--accent);
+    box-shadow: inset 3px 0 0 var(--accent);
+}
+
+.ship-card h4 {
+    margin: 0;
+    font-size: 0.95rem;
+}
+
+.ship-card p {
+    margin: 6px 0;
+    font-size: 0.82rem;
+}
+
+.ship-meta {
+    color: var(--muted);
+}
+
+.priority-label {
+    display: inline-block;
+    padding: 3px 7px;
+    background: #304158;
+    border-radius: 5px;
+    font-size: 0.72rem;
+    font-weight: 700;
+}
+
+.priority-emergency {
+    background: #642c36;
+    color: #ffdbe0;
+}
+
+.priority-critical {
+    background: #69421e;
+    color: #ffe3b5;
+}
+
+.priority-high {
+    background: #344f79;
+    color: #dceaff;
+}
+
+.ship-progress-track {
+    height: 8px;
+    margin: 10px 0 5px;
+    overflow: hidden;
+    background: #0b1220;
+    border-radius: 20px;
+}
+
+.ship-progress-fill {
+    width: 0%;
+    height: 100%;
+    background: var(--accent);
+    border-radius: inherit;
+    transition: width 0.1s linear;
+}
+
+.ship-progress-label {
+    color: var(--accent);
+    font-size: 0.8rem;
+}
+
+/* 6. At-sea and container lists */
+.chip-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 14px;
+}
+
+.ship-chip,
+.container-chip {
+    padding: 9px 12px;
+    background: var(--panel-light);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 0.85rem;
+}
+
+#at-sea-list {
+    opacity: 0.8;
+}
+
+.empty-message {
+    color: var(--muted);
+    font-size: 0.88rem;
+}
+
+/* 7. Routes and yard panels */
+.lower-panels {
+    display: grid;
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+    gap: 20px;
+}
+
+.routes-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 18px;
+}
+
+.route-chip {
+    padding: 7px 10px;
+    background: var(--accent-dark);
+    border: 1px solid #276765;
+    border-radius: 7px;
+    color: #b8fff3;
+    font-size: 0.85rem;
+}
+
+#route-start {
+    width: 100%;
+    margin-top: 8px;
+}
+
+#reachable-destinations,
+#unique-destinations {
+    margin-top: 14px;
+    color: var(--muted);
+    font-size: 0.88rem;
+    overflow-wrap: anywhere;
+}
+
+/* 8. Search suggestions */
+.search-results {
+    position: absolute;
+    z-index: 10;
+    top: calc(100% + 5px);
+    left: 0;
+    right: 0;
+    background: var(--panel-light);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.search-result {
+    display: block;
+    width: 100%;
+    padding: 10px 12px;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    color: var(--text);
+    text-align: left;
+}
+
+.search-result:hover {
+    background: var(--accent-dark);
+}
+
+.search-results:empty {
+    display: none;
+}
+
+/* 9. Footer */
+footer {
+    padding: 20px 0 4px;
+    color: var(--muted);
+    text-align: center;
+    font-size: 0.8rem;
+}
+
+/* 10. Responsive layout */
+@media (max-width: 1100px) {
+    .topbar {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .simulation-controls {
+        grid-column: 1 / -1;
+        justify-content: flex-start;
+    }
+
+    .lines-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 650px) {
+    .app-shell {
+        padding: 12px;
+    }
+
+    .topbar {
+        grid-template-columns: 1fr;
+        gap: 18px;
+        padding: 16px;
+    }
+
+    .simulation-controls {
+        grid-column: auto;
+        justify-content: flex-start;
+    }
+
+    .lines-grid,
+    .lower-panels {
+        grid-template-columns: 1fr;
+    }
+
+    .line-column {
+        min-height: 150px;
+    }
+
+    .section-heading {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+}
+
+.ship-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 12px;
+}
+
+.ship-action-button {
+    flex: 1 1 auto;
+    padding: 8px;
+    font-size: 0.78rem;
+}
+
+.action-message {
+    margin: 8px 0 0;
+    color: var(--danger);
+    font-size: 0.8rem;
+    overflow-wrap: anywhere;
+}
