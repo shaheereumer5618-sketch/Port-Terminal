@@ -443,3 +443,46 @@ footer {
     font-size: 0.8rem;
     overflow-wrap: anywhere;
 }
+/* Add Ship Form */
+
+#add-ship-form {
+    margin-top: 18px;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+    margin-bottom: 18px;
+}
+
+.form-field {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+}
+
+.form-field input,
+.form-field select {
+    width: 100%;
+}
+
+#add-ship-message {
+    margin-top: 12px;
+    font-size: 0.9rem;
+    overflow-wrap: anywhere;
+}
+
+#add-ship-message.success {
+    color: var(--accent);
+}
+
+#add-ship-message.error {
+    color: var(--danger);
+}
+
+@media (max-width: 650px) {
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+}

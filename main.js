@@ -11,6 +11,46 @@ const TICK_MS = 100;
 // Create the Engine that manages the entire port.
 const engine = new Engine(TICK_MS);
 
+// Add Ship Form
+const addShipForm = document.querySelector("#add-ship-form");
+const addShipMessage = document.querySelector("#add-ship-message");
+
+addShipForm.addEventListener("submit", (event) => {
+    event.preventDefault();
+
+    const shipId = document.querySelector("#ship-id").value.trim();
+    const shipName = document.querySelector("#ship-name").value.trim();
+    const arrival = Number(document.querySelector("#ship-arrival").value);
+    const priority = Number(document.querySelector("#ship-priority").value);
+    const capacity = Number(document.querySelector("#ship-capacity").value);
+
+    try {
+        // Register the ship in the port
+        engine.addShip(shipId, shipName, arrival, priority, capacity);
+
+        // Process the ship's arrival
+        const result = engine.shipArrives(shipId);
+
+        // Display the outcome
+        addShipMessage.className = "success";
+
+        if (result.overflown) {
+            addShipMessage.textContent =
+                `Ship ${shipId} registered, but the port is full. It remains at sea.`;
+        } else {
+            addShipMessage.textContent =
+                `Ship ${shipId} (${shipName}) arrived successfully at line ${result.lineId}.`;
+        }
+
+        // Clear the form after successful registration
+        addShipForm.reset();
+
+    } catch (error) {
+        addShipMessage.className = "error";
+        addShipMessage.textContent = `Error: ${error.message}`;
+    }
+});
+
 // Add example data so the dashboard has something to display.
 function addDemoData() {
     const ships = [

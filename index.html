@@ -1,6 +1,6 @@
-
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,6 +9,7 @@
 
     <link rel="stylesheet" href="./styles/main.css">
 </head>
+
 <body>
     <div class="app-shell">
 
@@ -21,12 +22,7 @@
 
             <div class="search-area">
                 <label for="search-input">Search ships or containers</label>
-                <input
-                    id="search-input"
-                    type="search"
-                    placeholder="Enter an ID..."
-                    autocomplete="off"
-                >
+                <input id="search-input" type="search" placeholder="Enter an ID..." autocomplete="off">
                 <div id="search-results" class="search-results"></div>
             </div>
 
@@ -49,6 +45,53 @@
         </header>
 
         <main>
+
+            <!-- Add Ship Form -->
+            <section class="section panel" aria-labelledby="add-ship-heading">
+                <h2 id="add-ship-heading">Register a New Ship</h2>
+
+                <form id="add-ship-form">
+                    <div class="form-grid">
+                        <div class="form-field">
+                            <label for="ship-id">Ship ID</label>
+                            <input id="ship-id" name="shipId" type="text" placeholder="e.g. S8" required>
+                        </div>
+
+                        <div class="form-field">
+                            <label for="ship-name">Ship Name</label>
+                            <input id="ship-name" name="shipName" type="text" placeholder="e.g. Titan" required>
+                        </div>
+
+                        <div class="form-field">
+                            <label for="ship-arrival">Arrival Value</label>
+                            <input id="ship-arrival" name="arrival" type="number" min="0" step="1" value="80" required>
+                        </div>
+
+                        <div class="form-field">
+                            <label for="ship-priority">Priority</label>
+                            <select id="ship-priority" name="priority" required>
+                                <option value="-1">Emergency (-1)</option>
+                                <option value="0">Critical (0)</option>
+                                <option value="1">High (1)</option>
+                                <option value="2" selected>Normal (2)</option>
+                                <option value="3">Low (3)</option>
+                                <option value="4">Very Low (4)</option>
+                                <option value="5">Bulk (5)</option>
+                            </select>
+                        </div>
+
+                        <div class="form-field">
+                            <label for="ship-capacity">Container Capacity</label>
+                            <input id="ship-capacity" name="capacity" type="number" min="1" step="1" value="10"
+                                required>
+                        </div>
+                    </div>
+
+                    <button type="submit">Register Ship</button>
+
+                    <p id="add-ship-message" role="status" aria-live="polite"></p>
+                </form>
+            </section>
             <!-- Four docking lines -->
             <section class="section" aria-labelledby="lines-heading">
                 <div class="section-heading">
@@ -133,4 +176,5 @@
 
     <script type="module" src="./main.js"></script>
 </body>
+
 </html>
