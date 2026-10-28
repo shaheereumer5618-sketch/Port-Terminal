@@ -1,13 +1,31 @@
 {
   "name": "port-terminal-manager",
   "version": "1.0.0",
-  "description": "",
+  "description": "A JavaScript port simulation that manages ship arrivals, docking lines, priority queues, container loading and unloading, and destination routes.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node --test",
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "module"
+  "type": "module",
+  "directories": {
+    "doc": "docs",
+    "test": "tests"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/shaheereumer5618-sketch/Port-Terminal.git"
+  },
+  "bugs": {
+    "url": "https://github.com/shaheereumer5618-sketch/Port-Terminal/issues"
+  },
+  "homepage": "https://github.com/shaheereumer5618-sketch/Port-Terminal#readme",
+  "devDependencies": {
+    "vite": "^8.3.5"
+  }
 }

@@ -1,4 +1,3 @@
-
 # Data Structures — Port Terminal Manager
 
 This project implements nine custom data structures. Each one solves
@@ -20,12 +19,13 @@ and retrieving docking history.
 
 ## 2. Queue
 
-**Used for:** The container yard.
+**Used for:** The container yard and the parking area.
 
 A Queue follows FIFO (First In, First Out). The container that entered
 the yard first is the next container selected for loading.
 
-This maintains a consistent loading order.
+The parking area also uses a Queue so ships that parked first are
+considered first when several share the same priority.
 
 **Main operations:** `enqueue`, `dequeue`, `peek`
 
@@ -137,8 +137,10 @@ and deleting an item.
 Each structure has a separate responsibility:
 
 - Stack manages last-in-first-out cargo and history operations.
-- Queue preserves the container yard's loading order.
-- PriorityQueue selects ships by urgency.
+- Queue preserves the container yard's loading order and the parking
+  area's arrival order.
+- PriorityQueue selects ships by urgency within each line and from the
+  at-sea overflow queue.
 - HashMap provides identifier-based access to records.
 - MinHeap supports top-k heaviest-container queries.
 - BST supports arrival ordering and range queries.
@@ -150,3 +152,31 @@ The Port coordinates these structures, while the Engine manages simulation
 time and emits events. The UI reads Engine snapshots and calls its public
 methods; it should not implement port rules or manipulate these structures
 directly.
+
+## Simulation rules
+
+The Engine's `_autoSchedule()` method drives the automatic behaviour
+while the simulation is running:
+
+- **Docked ship with cargo** — unload one container per tick until empty.
+  When the ship becomes empty and the yard has more containers, it
+  switches to load mode and refills. When the yard is empty, it parks.
+
+- **Docked ship with no cargo** — load one container per tick until
+  full, then depart. If the yard runs empty before the ship fills, it
+  departs with whatever partial cargo it has. If the yard is empty
+  when the ship docks, it parks.
+
+- **Parked ships** — the highest-priority parked ship is automatically
+  resumed into the first empty line whenever the yard becomes non-empty.
+  Players can also resume that ship manually. Ships that are parked but
+  are not the highest priority cannot be manually resumed until the
+  ship ahead of them leaves the parking area.
+
+Ships arriving at a full port go to the at-sea overflow queue; the
+highest-priority overflowed ship enters a line when a space becomes
+available.
+
+Priority is strictly per-line (Option B — independent lines). Each of
+the four docking lines serves its own waiting ships by priority. A
+ship in Line 2 does not compete with a ship in Line 1.

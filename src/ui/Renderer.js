@@ -1,5 +1,5 @@
-
 import { renderLineColumn } from "./LineColumn.js";
+import { createShipCard } from "./ShipCard.js";
 
 const PRIORITY_LABELS = {
     "-1": "Emergency",
@@ -14,11 +14,10 @@ const PRIORITY_LABELS = {
 export function setupRenderer(engine) {
     const atSeaList = document.getElementById("at-sea-list");
     const yardList = document.getElementById("yard-list");
+    const parkedList = document.getElementById("parked-list");
 
-    // Keep track of each ship card by its ID.
     const shipElements = new Map();
 
-    // Render ships waiting outside the full port.
     function renderAtSea(ships) {
         if (!atSeaList) return;
 
@@ -48,7 +47,44 @@ export function setupRenderer(engine) {
         atSeaList.replaceChildren(fragment);
     }
 
-    // Render containers waiting in the yard.
+    function renderParked(ships) {
+        if (!parkedList) return;
+
+        const fragment = document.createDocumentFragment();
+
+        if (!ships || ships.length === 0) {
+            const message = document.createElement("p");
+            message.className = "empty-message";
+            message.textContent = "No ships parked.";
+            fragment.appendChild(message);
+        } else {
+            for (const ship of ships) {
+                const card = createShipCard(
+                    {
+                        id: ship.id,
+                        name: ship.name,
+                        priority: ship.priority,
+                        priorityLabel:
+                            PRIORITY_LABELS[ship.priority] ?? "Unknown",
+                        state: "parked",
+                        capacity: 0,
+                        used: 0,
+                        containers: [],
+                        activeContainerId: null,
+                        progress: 0,
+                        canResume: Boolean(ship.canResume)
+                    },
+                    engine
+                );
+
+                card.dataset.shipId = ship.id;
+                fragment.appendChild(card);
+            }
+        }
+
+        parkedList.replaceChildren(fragment);
+    }
+
     function renderYard(containers) {
         if (!yardList) return;
 
@@ -76,7 +112,6 @@ export function setupRenderer(engine) {
         yardList.replaceChildren(fragment);
     }
 
-    // Rebuild the ID-to-element lookup after structural changes.
     function indexShipElements() {
         shipElements.clear();
 
@@ -87,7 +122,6 @@ export function setupRenderer(engine) {
         }
     }
 
-    // Render the latest complete port snapshot.
     function render() {
         const snapshot = engine.getSnapshot();
 
@@ -96,12 +130,12 @@ export function setupRenderer(engine) {
         }
 
         renderAtSea(snapshot.atSea);
+        renderParked(snapshot.parked ?? []);
         renderYard(snapshot.yard);
 
         indexShipElements();
     }
 
-    // Update one ship's progress without rebuilding all its cards.
     function updateProgress(event) {
         const card = shipElements.get(event.shipId);
 
@@ -126,12 +160,13 @@ export function setupRenderer(engine) {
         }
     }
 
-    // Events that can change which items are displayed.
     const refreshEvents = [
         "data:updated",
         "ship:arrived",
         "ship:overflown",
         "ship:docked",
+        "ship:parked",
+        "ship:unparked",
         "ship:loadingStarted",
         "ship:unloadingStarted",
         "ship:loadingFinished",
@@ -143,13 +178,10 @@ export function setupRenderer(engine) {
         engine.bus.on(eventName, render);
     }
 
-    // Progress events update only the relevant card.
     engine.bus.on("ship:progress", updateProgress);
 
-    // Show the initial port state immediately.
     render();
 
-    // Return controls for refreshing or cleaning up listeners.
     return {
         render,
 

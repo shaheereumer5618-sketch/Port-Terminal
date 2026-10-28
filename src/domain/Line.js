@@ -1,4 +1,3 @@
-
 import { PriorityQueue } from "../structures/PriorityQueue.js";
 
 export class Line {
@@ -110,6 +109,7 @@ export class Line {
                 state: ship.status,
                 capacity: ship.capacity,
                 used: ship.containerCount(),
+                containers: ship.listContainers(),
                 activeContainerId: ship.activeContainerId,
                 progress: ship.progress
             };

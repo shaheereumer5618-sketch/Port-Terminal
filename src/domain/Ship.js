@@ -1,4 +1,3 @@
-
 import { Stack } from "../structures/Stack.js";
 
 export class Ship {
@@ -16,6 +15,10 @@ export class Ship {
         this.activeContainerId = null;
         this.progress = 0;
         this.operationStartedAt = null;
+        this.arrivalTime = null;
+        this.departureTime = null;
+        this.lastPrevious = null;
+        this.lastNext = null;
     }
 
     load(containerId) {

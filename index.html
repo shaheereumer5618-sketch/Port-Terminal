@@ -87,11 +87,51 @@
                         </div>
                     </div>
 
+                    <label for="ship-line">Docking Line</label>
+                    <select id="ship-line" name="ship-line" required>
+                        <option value="1">Line 1</option>
+                        <option value="2">Line 2</option>
+                        <option value="3">Line 3</option>
+                        <option value="4">Line 4</option>
+                    </select>
+
                     <button type="submit">Register Ship</button>
 
                     <p id="add-ship-message" role="status" aria-live="polite"></p>
                 </form>
             </section>
+
+            <!-- Add Container Form -->
+            <section class="section panel" aria-labelledby="add-container-heading">
+                <h2 id="add-container-heading">Add a New Container</h2>
+
+                <form id="add-container-form">
+                    <div class="form-grid">
+                        <div class="form-field">
+                            <label for="container-id">Container ID</label>
+                            <input id="container-id" name="containerId" type="text"
+                                placeholder="e.g. C13" required>
+                        </div>
+
+                        <div class="form-field">
+                            <label for="container-weight">Weight</label>
+                            <input id="container-weight" name="weight" type="number" min="1" step="1"
+                                value="20" required>
+                        </div>
+
+                        <div class="form-field">
+                            <label for="container-dest">Destination</label>
+                            <input id="container-dest" name="dest" type="text"
+                                placeholder="e.g. A" required>
+                        </div>
+                    </div>
+
+                    <button type="submit">Add Container</button>
+
+                    <p id="add-container-message" role="status" aria-live="polite"></p>
+                </form>
+            </section>
+
             <!-- Four docking lines -->
             <section class="section" aria-labelledby="lines-heading">
                 <div class="section-heading">
@@ -129,6 +169,15 @@
                 <h2 id="sea-heading">At Sea — Overflow</h2>
                 <div id="at-sea-list" class="chip-list">
                     <p class="empty-message">No ships waiting at sea.</p>
+                </div>
+            </section>
+
+            <!-- Parked (idle) ships -->
+            <section class="section panel" aria-labelledby="parked-heading">
+                <h2 id="parked-heading">Parking Area — Idle Ships</h2>
+                <p>Empty ships pulled out of the lines. Resume to a line to bring them back.</p>
+                <div id="parked-list" class="ship-list">
+                    <p class="empty-message">No ships parked.</p>
                 </div>
             </section>
 
@@ -172,6 +221,18 @@
             <p>Port Terminal Manager · Live Simulation</p>
         </footer>
 
+    </div>
+
+    <!-- Details modal (populated by SearchBar.js) -->
+    <div id="details-modal" class="details-modal hidden" aria-hidden="true" role="dialog" aria-labelledby="details-title">
+        <div class="details-modal-backdrop"></div>
+        <div class="details-modal-content">
+            <div class="details-modal-header">
+                <h2 id="details-title" class="details-modal-title">Details</h2>
+                <button id="details-close" class="details-modal-close" type="button" aria-label="Close">×</button>
+            </div>
+            <div id="details-body" class="details-modal-body"></div>
+        </div>
     </div>
 
     <script type="module" src="./main.js"></script>

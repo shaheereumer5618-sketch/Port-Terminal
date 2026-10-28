@@ -1,4 +1,3 @@
-
 export class Container {
     constructor(id, weight, dest) {
         this.id = id;
@@ -6,5 +5,7 @@ export class Container {
         this.dest = dest;
         this.status = "inYard";
         this.shipId = null;
+        this.lastYardPrevious = null;
+        this.lastYardNext = null;
     }
 }

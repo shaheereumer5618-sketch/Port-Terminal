@@ -1,4 +1,3 @@
-
 const PRIORITY_LABELS = {
     "-1": "Emergency",
     0: "Critical",
@@ -20,48 +19,54 @@ export function createShipCard(ship, engine) {
     card.className = "ship-card";
 
     const isWaiting = ship.state === "waiting";
+    const isParked = ship.state === "parked";
     const isOperating =
         ship.state === "loading" || ship.state === "unloading";
 
-    if (!isWaiting) {
+    if (!isWaiting && !isParked) {
         card.classList.add("active");
     }
 
-    // Ship ID and name.
+    if (isParked) {
+        card.classList.add("parked");
+        if (ship.canResume) {
+            card.classList.add("parked-next");
+        }
+    }
+
     const heading = document.createElement("h4");
     heading.textContent = `${ship.id} — ${ship.name}`;
     card.appendChild(heading);
 
-    // Priority badge.
     const priority = document.createElement("span");
     priority.className = "priority-label";
-
     const priorityClass = PRIORITY_CLASSES[ship.priority];
-
     if (priorityClass) {
         priority.classList.add(priorityClass);
     }
-
     priority.textContent =
         ship.priorityLabel ??
         PRIORITY_LABELS[ship.priority] ??
         "Unknown";
-
     card.appendChild(priority);
 
-    // Cargo capacity.
     const capacity = document.createElement("p");
     capacity.className = "ship-meta";
     capacity.textContent = `Capacity: ${ship.used} / ${ship.capacity}`;
     card.appendChild(capacity);
 
-    // Ship state.
     const state = document.createElement("p");
     state.className = "ship-meta";
     state.textContent = `State: ${ship.state}`;
     card.appendChild(state);
 
-    // Show progress while an operation is running.
+    if (Array.isArray(ship.containers) && ship.containers.length > 0) {
+        const cargo = document.createElement("p");
+        cargo.className = "ship-containers";
+        cargo.textContent = `Cargo: ${ship.containers.join(", ")}`;
+        card.appendChild(cargo);
+    }
+
     if (isOperating) {
         const progress = Math.max(
             0,
@@ -90,12 +95,10 @@ export function createShipCard(ship, engine) {
         card.appendChild(container);
     }
 
-    // Operation feedback for this card.
     const message = document.createElement("p");
     message.className = "action-message";
     message.setAttribute("aria-live", "polite");
 
-    // Only the active ship can perform operations.
     if (!isWaiting) {
         const actions = document.createElement("div");
         actions.className = "ship-actions";
@@ -121,39 +124,54 @@ export function createShipCard(ship, engine) {
             actions.appendChild(button);
         }
 
-        // Load the first container waiting in the yard.
-        addActionButton(
-            "Load next",
-            isOperating || ship.used >= ship.capacity,
-            () => {
-                const yard = engine.getSnapshot().yard;
-                const nextContainer = yard[0];
-
-                if (!nextContainer) {
-                    throw new Error("The container yard is empty.");
+        if (isParked) {
+            addActionButton(
+                ship.canResume
+                    ? "Resume to Line"
+                    : "Resume (highest priority first)",
+                !ship.canResume,
+                () => {
+                    engine.unpark(ship.id);
                 }
+            );
+        } else {
+            addActionButton(
+                "Load next",
+                isOperating || ship.used >= ship.capacity,
+                () => {
+                    const yard = engine.getSnapshot().yard;
+                    const nextContainer = yard[0];
+                    if (!nextContainer) {
+                        throw new Error("The container yard is empty.");
+                    }
+                    engine.startLoading(ship.id, nextContainer.id);
+                }
+            );
 
-                engine.startLoading(ship.id, nextContainer.id);
-            }
-        );
+            addActionButton(
+                "Unload top",
+                isOperating || ship.used === 0,
+                () => {
+                    engine.startUnloading(ship.id);
+                }
+            );
 
-        // Unload the top container from the ship's stack.
-        addActionButton(
-            "Unload top",
-            isOperating || ship.used === 0,
-            () => {
-                engine.startUnloading(ship.id);
-            }
-        );
+            addActionButton(
+                "Depart",
+                isOperating,
+                () => {
+                    engine.depart(ship.id);
+                }
+            );
 
-        // Ask the Engine to depart the ship.
-        addActionButton(
-            "Depart",
-            isOperating || ship.used !== 0,
-            () => {
-                engine.depart(ship.id);
-            }
-        );
+            addActionButton(
+                "Park",
+                isOperating || ship.used !== 0,
+                () => {
+                    engine.park(ship.id);
+                }
+            );
+        }
 
         card.appendChild(actions);
         card.appendChild(message);

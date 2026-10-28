@@ -1,9 +1,9 @@
-
 import { Engine } from "./src/engine/Engine.js";
 
 import { setupRenderer } from "./src/ui/Renderer.js";
 import { setupSearchBar } from "./src/ui/SearchBar.js";
 import { setupRoutesPanel } from "./src/ui/RoutesPanel.js";
+import { setupScrollFx } from "./src/ui/scrollFx.js";
 
 // Simulation timing configuration.
 const TICK_MS = 100;
@@ -11,7 +11,9 @@ const TICK_MS = 100;
 // Create the Engine that manages the entire port.
 const engine = new Engine(TICK_MS);
 
+// ---------------------------------------------------------------
 // Add Ship Form
+// ---------------------------------------------------------------
 const addShipForm = document.querySelector("#add-ship-form");
 const addShipMessage = document.querySelector("#add-ship-message");
 
@@ -23,15 +25,12 @@ addShipForm.addEventListener("submit", (event) => {
     const arrival = Number(document.querySelector("#ship-arrival").value);
     const priority = Number(document.querySelector("#ship-priority").value);
     const capacity = Number(document.querySelector("#ship-capacity").value);
+    const lineId = Number(document.querySelector("#ship-line").value);
 
     try {
-        // Register the ship in the port
         engine.addShip(shipId, shipName, arrival, priority, capacity);
+        const result = engine.shipArrives(shipId, lineId);
 
-        // Process the ship's arrival
-        const result = engine.shipArrives(shipId);
-
-        // Display the outcome
         addShipMessage.className = "success";
 
         if (result.overflown) {
@@ -42,16 +41,43 @@ addShipForm.addEventListener("submit", (event) => {
                 `Ship ${shipId} (${shipName}) arrived successfully at line ${result.lineId}.`;
         }
 
-        // Clear the form after successful registration
         addShipForm.reset();
-
     } catch (error) {
         addShipMessage.className = "error";
         addShipMessage.textContent = `Error: ${error.message}`;
     }
 });
 
-// Add example data so the dashboard has something to display.
+// ---------------------------------------------------------------
+// Add Container Form
+// ---------------------------------------------------------------
+const addContainerForm = document.querySelector("#add-container-form");
+const addContainerMessage = document.querySelector("#add-container-message");
+
+addContainerForm.addEventListener("submit", (event) => {
+    event.preventDefault();
+
+    const containerId = document.querySelector("#container-id").value.trim();
+    const weight = Number(document.querySelector("#container-weight").value);
+    const dest = document.querySelector("#container-dest").value.trim();
+
+    try {
+        engine.addContainer(containerId, weight, dest);
+
+        addContainerMessage.className = "success";
+        addContainerMessage.textContent =
+            `Container ${containerId} added to yard (weight ${weight}, dest ${dest}).`;
+
+        addContainerForm.reset();
+    } catch (error) {
+        addContainerMessage.className = "error";
+        addContainerMessage.textContent = `Error: ${error.message}`;
+    }
+});
+
+// ---------------------------------------------------------------
+// Demo data
+// ---------------------------------------------------------------
 function addDemoData() {
     const ships = [
         ["S1", "Neptune", 10, 2, 10],
@@ -72,43 +98,41 @@ function addDemoData() {
         ["C12", 32, "D"]
     ];
 
-    // Register every ship with the Engine.
     for (const [id, name, arrival, priority, capacity] of ships) {
         engine.addShip(id, name, arrival, priority, capacity);
     }
 
-    // Register containers in the yard.
     for (const [id, weight, destination] of containers) {
         engine.addContainer(id, weight, destination);
     }
 
-    // Create connections between destinations.
     engine.addRoute("A", "B");
     engine.addRoute("B", "C");
     engine.addRoute("C", "D");
 
-    // Send each registered ship to the port.
     for (const [id] of ships) {
         engine.shipArrives(id);
     }
 }
 
-// Load the sample data before the UI renders.
 addDemoData();
 
-// Connect the UI components to the Engine.
+// ---------------------------------------------------------------
+// UI components
+// ---------------------------------------------------------------
 const renderer = setupRenderer(engine);
-
 setupSearchBar(engine);
 setupRoutesPanel(engine);
+setupScrollFx();
 
-// Find the simulation controls in index.html.
+// ---------------------------------------------------------------
+// Simulation controls
+// ---------------------------------------------------------------
 const startButton = document.getElementById("start-button");
 const stopButton = document.getElementById("stop-button");
 const speedSelect = document.getElementById("speed-select");
 const simulationStatus = document.getElementById("simulation-status");
 
-// Start the simulation when Start is clicked.
 startButton.addEventListener("click", () => {
     engine.start();
 
@@ -117,7 +141,6 @@ startButton.addEventListener("click", () => {
     simulationStatus.textContent = "Running";
 });
 
-// Stop the simulation when Stop is clicked.
 stopButton.addEventListener("click", () => {
     engine.stop();
 
@@ -126,20 +149,16 @@ stopButton.addEventListener("click", () => {
     simulationStatus.textContent = "Stopped";
 });
 
-// Change the simulation speed.
 speedSelect.addEventListener("change", () => {
     const speed = Number(speedSelect.value);
-
     engine.setSpeed(speed);
 });
 
-// Reflect the Engine's current running state.
 engine.bus.on("engine:tick", () => {
     simulationStatus.textContent =
         engine.running ? "Running" : "Stopped";
 });
 
-// Stop the timer and remove renderer listeners when leaving.
 window.addEventListener("beforeunload", () => {
     engine.stop();
     renderer.destroy();

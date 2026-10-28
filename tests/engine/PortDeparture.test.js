@@ -1,4 +1,3 @@
-
 import test from "node:test";
 import assert from "node:assert/strict";
 import { Port } from "../../src/engine/Port.js";
@@ -33,7 +32,7 @@ test("departing ship promotes the highest-priority waiter", () => {
     assert.equal(port.lines[0].currentShipId, "E1");
 });
 
-test("a ship carrying cargo cannot depart", () => {
+test("a ship carrying cargo can depart with cargo still on board", () => {
     const port = new Port();
 
     port.addShip("S1", "Neptune", 1);
@@ -41,12 +40,11 @@ test("a ship carrying cargo cannot depart", () => {
 
     port.ships.get("S1").load("C1");
 
-    assert.throws(
-        () => port.depart("S1"),
-        /containers on board/
-    );
+    const result = port.depart("S1");
 
-    assert.equal(port.lines[0].currentShipId, "S1");
+    assert.equal(result.shipId, "S1");
+    assert.equal(port.ships.get("S1").status, "departed");
+    assert.equal(port.lines[0].currentShipId, null);
 });
 
 test("departure allows the most urgent overflowed ship to enter", () => {
